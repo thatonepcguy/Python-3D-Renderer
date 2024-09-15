@@ -86,23 +86,23 @@ def rotate(cameraRot, object):
     theta_x = cameraRot[0]
     theta_y = cameraRot[1]
     theta_z = cameraRot[2]
-    ROTATION_MATRIX_X = np.matrix([[1,      0,              0     ], 
-                                   [0, cos(theta_x), -sin(theta_x)],
-                                   [0, sin(theta_x), cos(theta_x)]])
+    #ROTATION_MATRIX_X = np.matrix([[1,      0,              0     ], 
+    #                               [0, cos(theta_x), -sin(theta_x)],
+    #                               [0, sin(theta_x), cos(theta_x)]])
     ROTATION_MATRIX_Y = np.matrix([[cos(theta_y), 0, sin(theta_y)],
                                   [0, 1, 0],
                                   [-sin(theta_y), 0, cos(theta_y)]])
-    ROTATION_MATRIX_Z = np.matrix([[cos(theta_z), -sin(theta_z), 0],
-                                  [sin(theta_z), cos(theta_z), 0],
-                                  [0, 0, 1]])
+    #ROTATION_MATRIX_Z = np.matrix([[cos(theta_z), -sin(theta_z), 0],
+    #                              [sin(theta_z), cos(theta_z), 0],
+    #                              [0, 0, 1]])
     rotatedObject = []
     for triangle in object:
         rotatedTriangle = []
         for point in triangle:
             rotatedPoint = np.matrix([[point[0]], [point[1]], [point[2]]])
-            rotatedPoint = np.dot(ROTATION_MATRIX_X, rotatedPoint)
+            #rotatedPoint = np.dot(ROTATION_MATRIX_X, rotatedPoint)
             rotatedPoint = np.dot(ROTATION_MATRIX_Y, rotatedPoint)
-            rotatedPoint = np.dot(ROTATION_MATRIX_Z, rotatedPoint)
+            #rotatedPoint = np.dot(ROTATION_MATRIX_Z, rotatedPoint)
             if rotatedPoint[2] > 0:
                 rotatedTriangle.append(rotatedPoint)
         rotatedObject.append(rotatedTriangle)
@@ -110,7 +110,6 @@ def rotate(cameraRot, object):
     return rotatedObject
 
 
-import math
 
 def sortByDistance(object):
 
@@ -119,7 +118,7 @@ def sortByDistance(object):
     for face in object:
         totalDistance = 0
         for point in face:
-            totalDistance += math.sqrt(sum(point[i]**2 for i in range(len(point))))
+            totalDistance += sqrt(sum(point[i]**2 for i in range(len(point))))
         
         if len(face) != 0:
             avgDistance = totalDistance / len(face)
@@ -149,7 +148,7 @@ def main():
     #        [[100, 100, 200], [100, 200, 200], [100, 200, 100]], [[100, 100, 200], [100, 200, 100], [100, 100, 200]], # LEFT FACE
     #        [[200, 100, 200], [200, 200, 200], [200, 200, 100]], [[200, 100, 200], [200, 200, 100], [200, 100, 200]]] # RIGHT FACE
     
-    object= parseBasicObj("Python-3D-Renderer\\monkey.obj", 100, 0)
+    object= parseBasicObj("Python-3D-Renderer\\car.obj", 100, 100)
 
     pygame.init()
 
@@ -196,10 +195,10 @@ def main():
                 cameraPos[2] -= 10*cos(cameraRot[1])
             if key == "a":
                 cameraPos[0] -= 10*cos(cameraRot[1])
-                cameraPos[2] += 10*sin(cameraRot[1])
+                cameraPos[2] -= 10*sin(cameraRot[1])
             elif key == "d":
                 cameraPos[0] += 10*cos(cameraRot[1])
-                cameraPos[2] -= 10*sin(cameraRot[1])
+                cameraPos[2] += 10*sin(cameraRot[1])
             elif key == "left":
                 cameraRot[1] -= -radians(3)
             elif key == "right":
