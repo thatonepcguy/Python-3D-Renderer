@@ -1,8 +1,8 @@
 import pygame
 import numpy as np
-from math import cos, sin, radians
+from math import cos, sin, radians, sqrt
 
-def parseBasicObj(path, scale):
+def parseBasicObj(path, scale, yOffset):
     faces = []
     vertexes = []
 
@@ -16,7 +16,7 @@ def parseBasicObj(path, scale):
             parts = line.split()
             if len(parts) == 4:
                 x_str, y_str, z_str = parts[1], parts[2], parts[3]
-                vertexes.append([round(float(x_str)*scale,2), round(float(y_str)*-scale,5)+100, round(float(z_str)*scale,2)])
+                vertexes.append([round(float(x_str)*scale,2), round(float(y_str)*-scale,5)+yOffset, round(float(z_str)*scale,2)])
 
         # FACES
         if line.startswith("f "):
@@ -66,7 +66,7 @@ def render(object, screen):
             color = [155,155,155]
 
         if len(triangle) >= 3:
-            pygame.draw.polygon(screen, color, triangle, 5)
+            pygame.draw.polygon(screen, color, triangle)
 
 def transform(cameraPos, object):
     adjustedObject = []
@@ -108,6 +108,25 @@ def rotate(cameraRot, object):
         rotatedObject.append(rotatedTriangle)
 
     return rotatedObject
+
+
+import math
+
+def sortByDistance(object):
+
+    faceDistances = []
+
+    for face in object:
+        totalDistance = 0
+        for point in face:
+            totalDistance += math.sqrt(sum(point[i]**2 for i in range(len(point))))
+        
+        if len(face) != 0:
+            avgDistance = totalDistance / len(face)
+            faceDistances.append(avgDistance)
+
+    return [x for _, x in sorted(zip(faceDistances, object), key=lambda pair: pair[0], reverse=True)]
+
             
 
 def main():
@@ -130,7 +149,7 @@ def main():
     #        [[100, 100, 200], [100, 200, 200], [100, 200, 100]], [[100, 100, 200], [100, 200, 100], [100, 100, 200]], # LEFT FACE
     #        [[200, 100, 200], [200, 200, 200], [200, 200, 100]], [[200, 100, 200], [200, 200, 100], [200, 100, 200]]] # RIGHT FACE
     
-    object= parseBasicObj("object.obj", 100)
+    object= parseBasicObj("Python-3D-Renderer\\monkey.obj", 100, 0)
 
     pygame.init()
 
@@ -189,10 +208,11 @@ def main():
         screen.fill("black")
 
 
-        cubeTransformed = transform(cameraPos, object)
-        cubeRotated = rotate(cameraRot, cubeTransformed)
-        cubeRendered = convert(cubeRotated, FOV)
-        render(cubeRendered, screen)
+        objectTransformed = transform(cameraPos, object)
+        objectRotated = rotate(cameraRot, objectTransformed)
+        objectSorted = sortByDistance(objectRotated)
+        objectRendered = convert(objectSorted, FOV)
+        render(objectRendered, screen)
 
         pygame.display.flip()
         clock.tick(60)
