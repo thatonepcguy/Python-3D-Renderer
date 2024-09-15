@@ -27,6 +27,8 @@ def parseBasicObj(path, scale):
                 point2 = point2.split("/")[0]
                 point3 = point3.split("/")[0]
                 faces.append([vertexes[int(point1)-1], vertexes[int(point2)-1], vertexes[int(point3)-1]])
+                
+            
             if len(parts) == 5:
                 point1, point2, point3, point4= parts[1], parts[2], parts[3], parts[4]
                 point1 = point1.split("/")[0]
@@ -34,6 +36,8 @@ def parseBasicObj(path, scale):
                 point3 = point3.split("/")[0]
                 point4 = point4.split("/")[0]
                 faces.append([vertexes[int(point1)-1], vertexes[int(point2)-1], vertexes[int(point3)-1], vertexes[int(point4)-1]])
+                
+        
 
     FILE.close()
     return faces
@@ -50,10 +54,19 @@ def convert(object, FOV):
     return convertedPoints
 
 def render(object, screen):
-    color = [100, 100, 100, 255]
-    for triangle in object:
+    color = [155,155,155]
+    for i, triangle in enumerate(object):
+        if color[0] < 255:
+            color[0] += 1
+        elif color[1] < 255:
+            color[1] += 1
+        elif color[2] < 255:
+            color[2] += 1
+        else:
+            color = [155,155,155]
+
         if len(triangle) >= 3:
-            pygame.draw.polygon(screen, color, triangle, 1)
+            pygame.draw.polygon(screen, color, triangle, 5)
 
 def transform(cameraPos, object):
     adjustedObject = []
@@ -117,7 +130,7 @@ def main():
     #        [[100, 100, 200], [100, 200, 200], [100, 200, 100]], [[100, 100, 200], [100, 200, 100], [100, 100, 200]], # LEFT FACE
     #        [[200, 100, 200], [200, 200, 200], [200, 200, 100]], [[200, 100, 200], [200, 200, 100], [200, 100, 200]]] # RIGHT FACE
     
-    object = parseBasicObj("object.obj", 100)
+    object= parseBasicObj("object.obj", 100)
 
     pygame.init()
 
